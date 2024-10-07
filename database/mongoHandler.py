@@ -1,15 +1,16 @@
 from operator import truediv
-
 from pymongo import MongoClient
 
 from database.entities import Message
 
 from pymongo import MongoClient
-import sklearn
+
+from database.mongoconnection import connectionstring
+
 
 class MongoHandler:
     def __init__(self):
-        self.client = MongoClient("mongodb+srv://brunotsavoia:123456qwerty@mongochat.95yw8.mongodb.net/")
+        self.client = MongoClient(connectionstring)
 
     def connect(self, db_name):
 
