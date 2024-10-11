@@ -21,6 +21,47 @@ class MongoHandler:
         else:
             return False
 
+def update_password(email:str, newpass : str):
+    cli = MongoClient(connectionstring)
+    db = cli["chat"]
+    coll = db.users
+
+    result = coll.update_one(
+        {"email": email},  # Encontrar o usuário pelo email
+        {"$set": {"password": newpass}}  # Atualizar a senha
+    )
+    if result.matched_count > 0:
+        print("Senha atualizada com sucesso!")
+    else:
+        print("Usuário não encontrado.")
+
+def delete_user(email :str, senha : str):
+    cli = MongoClient(connectionstring)
+    db = cli["chat"]
+    coll = db.users
+
+    user_data = {
+        "email": email,
+        "password": senha
+    }
+
+    result = coll.delete_one(user_data)
+
+    if result.deleted_count > 0:  # Verifica se algum documento foi excluído
+        print("Conta excluída com sucesso!")
+    else:
+        print("Nenhuma conta encontrada com esse email e senha.")
+
+
+def is_there_user(email :str):
+    cli = MongoClient(connectionstring)
+    db = cli["chat"]
+    coll = db.users
+
+
+    existing_user = coll.find_one({"email": email})
+    if existing_user:
+        return True
 
 def add_new_user(email: str, senha: str):
     cli = MongoClient(connectionstring)
