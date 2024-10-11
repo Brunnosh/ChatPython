@@ -1,10 +1,7 @@
-from operator import truediv
-from pymongo import MongoClient
+import base64
 
 from database.entities import Message
-
 from pymongo import MongoClient
-
 from database.mongoconnection import connectionstring
 
 
@@ -25,28 +22,17 @@ class MongoHandler:
             return False
 
 class Operations:
-    def __init__(self, email: str, password: str):
+    def __init__(self, email: str, password: str, salt : bytes):
 
         self.connection_string = connectionstring
-    def add_new_message(self, m: Message):
+
+    def add_new_message(self, m: Message, salt: bytes):
         cli = MongoClient(self.connection_string)
         db = cli["chat"]
         coll = db.messages
+        m.__dict__['salt'] = base64.b64encode(salt).decode()  # Armazenar o salt
         return coll.insert_one(m.__dict__).inserted_id
 
-    def retrieve_message(self, email : str):
-
-        cli = MongoClient(self.connection_string)
-        db = cli["chat"]
-        coll = db.messages
-        messages = coll.find({
-            "$or": [
-                {"email_from": email},
-                {"email_to": email}
-            ]
-        })
-
-        return list(messages)
 
     def retrieve_messages_from_contact(self, email: str, contact: str):
         cli = MongoClient(self.connection_string)

@@ -1,24 +1,49 @@
-
+import os
+import base64
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from cryptography.fernet import Fernet, InvalidToken
 from database.entities import User, Message
 from database.mongoHandler import MongoHandler, Operations
+
+# Função para derivar a chave
+def derive_key(password: str, salt: bytes) -> bytes:
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=100000,
+        backend=default_backend()
+    )
+    return base64.urlsafe_b64encode(kdf.derive(password.encode()))
+
+# Função para gerar um novo salt
+def generate_salt() -> bytes:
+    return os.urandom(16)  # 16 bytes de salt
 
 if __name__ == '__main__':
     handler = MongoHandler()
 
-    email = input("Email:")
-    senha = input("Senha:")
+    email = input("Email: ")
+    senha = input("Senha: ")
 
     if handler.auth(email, senha):
-        print("usuario logado")
+        print("Usuário logado")
 
-        repete = 0
+        # Solicitar a senha para derivar a chave
+        password = input("Insira a senha para a criptografia: ")
+        salt = generate_salt()  # Gerar um salt
+        key = derive_key(password, salt)
+        fernet = Fernet(key)  # Inicializa Fernet com a chave derivada
 
-        operations = Operations(email,senha)
+        operations = Operations(email, senha, salt)
+
         while True:
             print("[1] - Enviar mensagem")
             print("[2] - Checar mensagens (Um contato)")
             print("[3] - Listar contatos")
-            print("[4] - Trocar chave de criptografia")
+            print("[4] - Trocar senha de criptografia")
             print("[5] - Sair")
 
             opcao = input("Opção: ")
@@ -28,8 +53,10 @@ if __name__ == '__main__':
                     # Enviar mensagem
                     destino = input("Para: ")
                     conteudo = input("Mensagem: ")
-                    msg = Message(email, destino, conteudo)
-                    operations.add_new_message(msg)
+                    # Criptografar a mensagem
+                    conteudo_cripto = fernet.encrypt(conteudo.encode()).decode()
+                    msg = Message(email, destino, conteudo_cripto)
+                    operations.add_new_message(msg, salt)  # Armazena também o salt
                     print("Mensagem enviada com sucesso!")
 
                 case "2":
@@ -38,9 +65,19 @@ if __name__ == '__main__':
                     mensagens = operations.retrieve_messages_from_contact(email, contato)
                     if mensagens:
                         for m in mensagens:
-                            print(f"{m['email_from']} -> {m['email_to']}: {m['content']}")
-                    else:
-                        print(f"Nenhuma mensagem com {contato} encontrada.")
+                            try:
+                                # Decodificar o salt de volta para bytes
+                                salt = base64.b64decode(m['salt'].encode())
+                                # Derivar a chave com o salt armazenado
+                                key = derive_key(password, salt)  # Usar o salt da mensagem
+                                fernet = Fernet(key)
+                                # Descriptografar a mensagem
+                                conteudo_descripto = fernet.decrypt(m['content'].encode()).decode()
+                                print(f"{m['email_from']} -> {m['email_to']}: {conteudo_descripto}")
+                            except InvalidToken:
+                                print(f"Erro ao descriptografar mensagem de {m['email_from']}.")
+                            except Exception as e:
+                                print(f"Ocorreu um erro: {str(e)}")
 
                 case "3":
                     # Listar todos os contatos com os quais já trocou mensagens
@@ -53,8 +90,9 @@ if __name__ == '__main__':
                         print("Você ainda não trocou mensagens com ninguém.")
 
                 case "4":
-                    print("Saindo...")
-                    break
+                    # Trocar senha de criptografia
+                    password = input("Insira a nova senha para a criptografia: ")
+                    print("Senha de criptografia atualizada com sucesso.")
 
                 case "5":
                     print("Saindo...")
@@ -62,11 +100,5 @@ if __name__ == '__main__':
 
                 case _:
                     print("Opção inválida, tente novamente.")
-
-
-
-
     else:
         print("Usuário não encontrado")
-
-
