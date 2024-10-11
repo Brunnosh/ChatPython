@@ -1,18 +1,9 @@
 
 from database.entities import User
-from database.mongoHandler import MongoHandler, Operations
-
-
-def enviarMenssagem():
-    print("Digite a menssagem")
-    mensagem = input(":")
-
-
+from database.mongoHandler import MongoHandler
 
 if __name__ == '__main__':
     handler = MongoHandler()
-    operation = Operations()
-
 
     email = input("Email:")
     senha = input("Senha:")
@@ -32,12 +23,9 @@ if __name__ == '__main__':
             repete = input("Opção:")
 
             match repete:
-                case "1":
+                case 1:
+                    exit()
                     #Enviar mensagem
-                    enviarMenssagem()
-
-
-
                 case 2:
                     exit()
                     # Consultar todas mensagens
@@ -47,9 +35,11 @@ if __name__ == '__main__':
                 case 4:
                     repete = 0
 
+
+
+
+
     else:
         print("Usuário não encontrado")
-
-
 
 
