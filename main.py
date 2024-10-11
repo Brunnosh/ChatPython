@@ -16,9 +16,9 @@ if __name__ == '__main__':
         operations = Operations(email,senha)
         while True:
             print("[1] - Enviar mensagem")
-            print("[2] - Checar mensagens (Todas)")
-            print("[3] - Checar mensagens (Um contato)")
-            print("[4] - Listar contatos")
+            print("[2] - Checar mensagens (Um contato)")
+            print("[3] - Listar contatos")
+            print("[4] - Trocar chave de criptografia")
             print("[5] - Sair")
 
             opcao = input("Opção: ")
@@ -33,16 +33,6 @@ if __name__ == '__main__':
                     print("Mensagem enviada com sucesso!")
 
                 case "2":
-                    # Checar todas as mensagens enviadas/recebidas
-                    mensagens = operations.retrieve_message(email)
-                    if mensagens:
-                        print("Numero total de mensagens: " + str(len(mensagens)))
-                        for m in mensagens:
-                            print(f"{m['email_from']} -> {m['email_to']}: {m['content']}")
-                    else:
-                        print("Nenhuma mensagem encontrada.")
-
-                case "3":
                     # Consultar mensagens de um contato específico
                     contato = input("Contato: ")
                     mensagens = operations.retrieve_messages_from_contact(email, contato)
@@ -52,7 +42,7 @@ if __name__ == '__main__':
                     else:
                         print(f"Nenhuma mensagem com {contato} encontrada.")
 
-                case "4":
+                case "3":
                     # Listar todos os contatos com os quais já trocou mensagens
                     contatos = operations.list_all_contacts(email)
                     if contatos:
@@ -61,6 +51,10 @@ if __name__ == '__main__':
                             print(contato)
                     else:
                         print("Você ainda não trocou mensagens com ninguém.")
+
+                case "4":
+                    print("Saindo...")
+                    break
 
                 case "5":
                     print("Saindo...")
