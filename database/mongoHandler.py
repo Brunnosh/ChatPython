@@ -50,7 +50,10 @@ def delete_user(email :str, senha : str):
     if result.deleted_count > 0:  # Verifica se algum documento foi excluído
         print("Conta excluída com sucesso!")
     else:
-        print("Nenhuma conta encontrada com esse email e senha.")
+        if is_there_user(email):
+            print("Senha inválida")
+        else:
+            print("Nenhuma conta encontrada com esse email e senha.")
 
 
 def is_there_user(email :str):
