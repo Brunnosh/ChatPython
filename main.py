@@ -1,12 +1,25 @@
 
 from database.entities import User
-from database.mongoHandler import MongoHandler
+from database.mongoHandler import MongoHandler, Operations
+from database.entities import Message
+def menviaMensagem():
+    nickname_from = email
+    nickname_to = input("Digite para quem deseja enviar: ")
+    content = input("Digite A mensagem ")
+    m = Message(nickname_from,nickname_to,content)
+    operation.add_new_message(m)
+
+
 
 if __name__ == '__main__':
     handler = MongoHandler()
 
     email = input("Email:")
     senha = input("Senha:")
+
+    operation = Operations(email,senha)
+
+
 
     if handler.auth(email, senha):
         print("usuario logado")
@@ -23,8 +36,8 @@ if __name__ == '__main__':
             repete = input("Opção:")
 
             match repete:
-                case 1:
-                    exit()
+                case "1":
+                    menviaMensagem()
                     #Enviar mensagem
                 case 2:
                     exit()
