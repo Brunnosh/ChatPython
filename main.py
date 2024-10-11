@@ -39,13 +39,13 @@ if __name__ == '__main__':
                 case "1":
                     menviaMensagem()
                     #Enviar mensagem
-                case 2:
+                case "2":
                     exit()
                     # Consultar todas mensagens
-                case 3:
+                case "3":
                     exit()
                     # Consultar mensagem de um contato
-                case 4:
+                case "4":
                     repete = 0
 
 
