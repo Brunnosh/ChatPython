@@ -21,6 +21,27 @@ class MongoHandler:
         else:
             return False
 
+
+def add_new_user(email: str, senha: str):
+    cli = MongoClient(connectionstring)
+    db = cli["chat"]
+    coll = db.users
+
+    # Verifica se o usuário já existe
+    existing_user = coll.find_one({"email": email})
+    if existing_user:
+        return "Usuário já existe!"
+
+    # Adiciona novo usuário
+    user_data = {
+        "email": email,
+        "password": senha  # Aqui você pode adicionar hash na senha se necessário
+    }
+
+    result = coll.insert_one(user_data)
+    return result.inserted_id  # Retorna o ID do novo usuário
+
+
 class Operations:
     def __init__(self, email: str, password: str, salt : bytes):
 
