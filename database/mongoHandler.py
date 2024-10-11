@@ -19,7 +19,18 @@ class MongoHandler:
         if user:
             return True
         else:
-            return False
+            registerUser = input(
+                f"Usuário não encontrado. Deseja criar uma conta com o email '{email}'? (s/n): ").lower()
+
+            if registerUser == 's':
+                # Chama a função para criar uma nova conta
+                add_new_user(email, password)
+                return True
+            else:
+                print("Encerrando o programa.")
+                exit()
+
+
 
 
 def add_new_user(email: str, senha: str):
