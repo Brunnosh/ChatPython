@@ -9,3 +9,4 @@ class Message:
         self.nickname_from = nickname_from
         self.nickname_to = nickname_to
         self.content = content
+
