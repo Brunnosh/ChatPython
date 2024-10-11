@@ -5,7 +5,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.fernet import Fernet, InvalidToken
 from database.entities import User, Message
-from database.mongoHandler import MongoHandler, Operations, add_new_user
+from database.mongoHandler import MongoHandler, Operations, add_new_user, is_there_user, update_password, delete_user
 
 
 # Função para derivar a chave
@@ -30,7 +30,9 @@ if __name__ == '__main__':
     while True:
         print("[1] - Criar conta")
         print("[2] - Fazer login")
-        print("[3] - Sair")
+        print("[3] - Alterar senha")
+        print("[4] - Deletar conta")
+        print("[5] - Sair")
 
         escolha = input("escolha:")
 
@@ -119,16 +121,30 @@ if __name__ == '__main__':
 
                             case "5":
                                 print("Saindo...")
-                                break
+                                exit()
 
                             case _:
                                 print("Opção inválida, tente novamente.")
                 else:
-                    print("Usuário não encontrado")
-
+                    if is_there_user(email):
+                        print("Senha inválida")
+                    else:
+                        print("Usuário não encontrado")
 
 
             case "3":
+                emailTrocaSenha = input("Email:")
+                novaSenha = input("Nova senha:")
+                update_password(emailTrocaSenha, novaSenha)
+
+            case "4":
+                emailDeletarConta = input("Email:")
+                senhaDeletarConta = input("Senha:")
+                delete_user(emailDeletarConta,senhaDeletarConta)
+
+
+
+            case "5":
                 break
 
 
