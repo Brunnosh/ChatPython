@@ -27,9 +27,7 @@ class MongoHandler:
 class Operations:
     def __init__(self, username: str, password: str, primary_node:str):
 
-        self.connection_string = \
-            ('mongo+srv://{}:{}@{}?retryWrites=true'.format(username, password, primary_node))
-
+        self.connection_string = connectionstring
     def add_new_message(self, m: Message):
         cli = MongoClient(self.connection_string)
         db = cli["chat"]
