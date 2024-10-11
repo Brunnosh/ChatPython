@@ -5,7 +5,7 @@ class User:
         self.password = password
 
 class Message:
-    def __init__(self, nickname_from, nickname_to, content):
-        self.nickname_from = nickname_from
-        self.nickname_to = nickname_to
+    def __init__(self, email_from, email_to, content):
+        self.email_from = email_from
+        self.email_to = email_to
         self.content = content

@@ -41,8 +41,8 @@ class Operations:
         coll = db.messages
         messages = coll.find({
             "$or": [
-                {"nickname_from": email},
-                {"nickname_to": email}
+                {"email_from": email},
+                {"email_to": email}
             ]
         })
 
@@ -56,9 +56,32 @@ class Operations:
         # Recuperar mensagens entre o usuário e um contato específico
         messages = coll.find({
             "$or": [
-                {"nickname_from": email, "nickname_to": contact},
-                {"nickname_from": contact, "nickname_to": email}
+                {"email_from": email, "email_to": contact},
+                {"email_from": contact, "email_to": email}
             ]
         })
 
         return list(messages)
+
+    def list_all_contacts(self, email: str):
+        cli = MongoClient(self.connection_string)
+        db = cli["chat"]
+        coll = db.messages
+
+        # Buscar todos os contatos que o usuário já trocou mensagens
+        messages = coll.find({
+            "$or": [
+                {"email_from": email},
+                {"email_to": email}
+            ]
+        })
+
+        # Criar um conjunto único de contatos
+        contacts = set()
+        for msg in messages:
+            if msg["email_from"] != email:
+                contacts.add(msg["email_from"])
+            if msg["email_to"] != email:
+                contacts.add(msg["email_to"])
+
+        return list(contacts)
