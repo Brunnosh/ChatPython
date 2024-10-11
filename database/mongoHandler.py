@@ -25,7 +25,7 @@ class MongoHandler:
             return False
 
 class Operations:
-    def __init__(self, username: str, password: str, primary_node:str):
+    def __init__(self, email: str, password: str):
 
         self.connection_string = connectionstring
     def add_new_message(self, m: Message):
@@ -33,3 +33,32 @@ class Operations:
         db = cli["chat"]
         coll = db.messages
         return coll.insert_one(m.__dict__).inserted_id
+
+    def retrieve_message(self, email : str):
+
+        cli = MongoClient(self.connection_string)
+        db = cli["chat"]
+        coll = db.messages
+        messages = coll.find({
+            "$or": [
+                {"nickname_from": email},
+                {"nickname_to": email}
+            ]
+        })
+
+        return list(messages)
+
+    def retrieve_messages_from_contact(self, email: str, contact: str):
+        cli = MongoClient(self.connection_string)
+        db = cli["chat"]
+        coll = db.messages
+
+        # Recuperar mensagens entre o usuário e um contato específico
+        messages = coll.find({
+            "$or": [
+                {"nickname_from": email, "nickname_to": contact},
+                {"nickname_from": contact, "nickname_to": email}
+            ]
+        })
+
+        return list(messages)
